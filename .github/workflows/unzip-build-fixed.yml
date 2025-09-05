@@ -16,6 +16,9 @@ jobs:
       - name: Unzip project
         run: unzip -o MemoryCue-App-With-Workflows.zip -d .
 
+      - name: Copy settings.gradle.kts
+        run: cp settings.gradle.kts MemoryCue-App-With-Workflows/settings.gradle.kts
+
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
