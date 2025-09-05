@@ -1,0 +1,1 @@
+# ProGuard rules for Memory Cue app
