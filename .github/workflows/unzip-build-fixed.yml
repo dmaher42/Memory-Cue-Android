@@ -1,0 +1,38 @@
+name: Android CI - Unzip Build
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Unzip project
+        run: unzip -o MemoryCue-App-With-Workflows.zip -d .
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: '8.4'
+
+      - name: Build Debug APK
+        working-directory: MemoryCue-App-With-Workflows
+        run: gradle assembleDebug
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-apk
+          path: MemoryCue-App-With-Workflows/app/build/outputs/apk/debug/*.apk
