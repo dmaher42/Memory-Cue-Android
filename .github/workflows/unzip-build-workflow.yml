@@ -21,10 +21,10 @@ jobs:
           set -e
           echo "=== Contents of extracted/ ==="
           ls -la extracted
-          GRADLEW_PATH=$(find extracted -maxdepth 4 -name gradlew -print -quit)
+          GRADLEW_PATH=$(find extracted -maxdepth 6 -name gradlew -print -quit)
           if [ -z "$GRADLEW_PATH" ]; then
             echo "ERROR: gradlew not found after unzip"
-            find extracted -maxdepth 4 -type f | head -40
+            find extracted -maxdepth 6 -type f | head -80
             exit 1
           fi
           PROJECT_DIR=$(dirname "$GRADLEW_PATH")
