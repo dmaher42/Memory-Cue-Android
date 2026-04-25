@@ -14,26 +14,41 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Unzip project
-        run: unzip -q MemoryCue-App-With-Workflows.zip -d .
+        run: unzip -q MemoryCue-App-With-Workflows.zip -d extracted
+
+      - name: Find project directory containing gradlew
+        run: |
+          set -e
+          echo "=== Contents of extracted/ ==="
+          ls -la extracted
+          GRADLEW_PATH=$(find extracted -maxdepth 6 -name gradlew -print -quit)
+          if [ -z "$GRADLEW_PATH" ]; then
+            echo "ERROR: gradlew not found after unzip"
+            find extracted -maxdepth 6 -type f | head -80
+            exit 1
+          fi
+          PROJECT_DIR=$(dirname "$GRADLEW_PATH")
+          echo "Found gradlew at: $GRADLEW_PATH"
+          echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
 
       - name: Set up JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
 
       - name: Print Gradle and Java versions
-        working-directory: MemoryCue-App-With-Workflows
+        working-directory: ${{ env.PROJECT_DIR }}
         run: |
           chmod +x ./gradlew
           ./gradlew -v
 
       - name: Build Debug APK
-        working-directory: MemoryCue-App-With-Workflows
+        working-directory: ${{ env.PROJECT_DIR }}
         run: ./gradlew --no-daemon assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: debug-apk
-          path: MemoryCue-App-With-Workflows/app/build/outputs/apk/debug/app-debug.apk
+          path: ${{ env.PROJECT_DIR }}/app/build/outputs/apk/debug/app-debug.apk
